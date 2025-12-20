@@ -34,6 +34,7 @@
         logs: [],
         listmaps: {},  // lists can created
         appEnum: {},
+        OOP: {},
       };
 
       this._returnValue = '';
@@ -82,7 +83,63 @@
           
           {
             blockType: Scratch.BlockType.LABEL,
-            text: 'functions'
+            text: 'functions and OOP'
+          },
+          
+          {
+            opcode: 'classfunc',
+            blockType: Scratch.BlockType.CONDITIONAL,
+            text: 'class [NAME]',
+            arguments: {
+              NAME: {type: Scratch.ArgumentType.STRING, defaultValue: 'foo'}
+            },
+          },
+
+          {
+            opcode: 'lambfunction',
+            blockType: Scratch.BlockType.CONDITIONAL,
+            text: 'anonymous function',
+            arguments: {},
+          },
+
+          {
+            opcode: 'methodFunc',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'method FUNC: [FUNC] NAME: [NAME]',
+            arguments: {
+              FUNC: {type: Scratch.ArgumentType.STACK, defaultValue: ''},
+              NAME: {type: Scratch.ArgumentType.STRING, defaultValue: 'bar'}
+            }
+          },
+
+          {
+            opcode: 'callmethod',
+            blockType: Scratch.BlockType.REPORTER,
+            blockShape: Scratch.BlockShape.SQUARE,
+            text: 'call method NAME: [NAME]',
+            arguments: {
+              NAME: {type: Scratch.ArgumentType.STRING, defaultValue: 'bar'}
+            }
+          },
+
+          {
+            opcode: 'instancenew',
+            blockType: Scratch.BlockType.COMMAND,
+            text: 'new inst [NAME] value [VALUE]',
+            arguments: {
+             NAME: {type: Scratch.ArgumentType.STRING, defaultValue: 'bar'},
+             VALUE: {type: Scratch.ArgumentType.STRING, defaultValue: 'baz'}
+            }
+          },
+
+          {
+            opcode: 'callinst',
+            blockType: Scratch.BlockType.REPORTER,
+            blockShape: Scratch.BlockShape.SQUARE,
+            text: 'call inst [NAME]',
+            arguments: {
+              NAME: {type: Scratch.ArgumentType.STRING, defaultValue: 'bar'}
+            }
           },
 
           {
@@ -298,6 +355,10 @@
           },
 
           {
+            blockType: Scratch.BlockType.LABEL,
+            text: 'literal booleans'
+          },
+          {
             opcode: 'True',
             blockType: Scratch.BlockType.BOOLEAN,
             blockShape: Scratch.BlockShape.SQUARE,
@@ -423,8 +484,8 @@
             text: 'vars'
           },
           // --- Core variables & aliases ---
-          { opcode: 'set_var_c', blockType: Scratch.BlockType.COMMAND, text: 'Set var C [NAME] = [VALUE]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'var' }, VALUE: { type: Scratch.ArgumentType.STRING, defaultValue: '{}' } }, color1f: "#FFAF00" },
-          { opcode: 'var_c', blockType: Scratch.BlockType.REPORTER, text: 'Var C [NAME]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'var' } }, color1f: "#FFAF00" },
+          { opcode: 'set_var_c', blockType: Scratch.BlockType.COMMAND, text: 'int [NAME] = [VALUE]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'var' }, VALUE: { type: Scratch.ArgumentType.STRING, defaultValue: '{}' } }, color1f: "#FFAF00" },
+          { opcode: 'var_c', blockType: Scratch.BlockType.REPORTER, text: 'var [NAME]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'var' } }, color1f: "#FFAF00" },
 
            {
             blockType: Scratch.BlockType.LABEL,
@@ -492,8 +553,8 @@
             text: 'old vars'
           },
           // legacy names (retrocompatibility)
-          { opcode: 'setVarC', blockType: Scratch.BlockType.COMMAND, text: 'Set var C [NAME] = [VALUE]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'nombre' }, VALUE: { type: Scratch.ArgumentType.STRING, defaultValue: 'valor' } }, color1f: "#FFAF00" },
-          { opcode: 'getVarC', blockType: Scratch.BlockType.REPORTER, text: 'Var C [NAME]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'nombre' } }, color1f: "#FFAF00" },
+          { opcode: 'setVarC', blockType: Scratch.BlockType.COMMAND, text: 'int [NAME] = [VALUE]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'nombre' }, VALUE: { type: Scratch.ArgumentType.STRING, defaultValue: 'valor' } }, color1f: "#FFAF00" },
+          { opcode: 'getVarC', blockType: Scratch.BlockType.REPORTER, text: 'var [NAME]', arguments: { NAME: { type: Scratch.ArgumentType.STRING, defaultValue: 'nombre' } }, color1f: "#FFAF00" },
            {
             blockType: Scratch.BlockType.LABEL,
             text: 'computer logic'
@@ -2430,15 +2491,14 @@
 
 myReporterFunc(args, util) {
     const result = this._returnValue;
-
-    if (result !== 0) {
+    
+    if (result !== null) {
         this._returnValue = 0; 
         return result; 
     }
-    
     // Si no hay interrupción, devuelve un valor que NO sea 0.
     // Una cadena vacía es más clara si el valor esperado es texto.
-    return ''; // ⬅️ Devuelve cadena vacía (o "ERROR") si el comando no ha actuado.
+    return 'not a function'; // ⬅️ Devuelve cadena vacía (o "ERROR") si el comando no ha actuado.
 }
   
    print(args) {
@@ -2824,6 +2884,43 @@ myReporterFunc(args, util) {
 
   keyisdown(args, util) {
     return util.ioQuery("keyboard", "getKeyIsDown", [args.KEY]);
+  }
+
+  lambfunction(args, util) {
+    return true;
+  }
+
+  classfunc(args) {
+    const Name = args.NAME;
+    const contentclass = {
+      methods: {},
+      properties: {},
+    };
+
+    this.currentclass = Name;
+    this.STORAGE.OOP[Name] = contentclass;
+    return true;
+  }
+
+  methodFunc(args) {
+    const Name = args.NAME;
+    const content = {
+      function: args.FUNC
+    };
+
+    this.STORAGE.OOP[this.currentclass].methods[Name] = content;
+  }
+
+  callmethod(args) {
+    return this.STORAGE.OOP[this.currentclass].methods[args.NAME].function;
+  }
+
+  instancenew(args) {
+    this.STORAGE.OOP[this.currentclass].properties[args.NAME] = args.VALUE;
+  }
+
+  callinst(args) {
+    return this.STORAGE.OOP[this.currentclass].properties[args.NAME];
   }
   } // end class
   Scratch.extensions.register(new TA());
