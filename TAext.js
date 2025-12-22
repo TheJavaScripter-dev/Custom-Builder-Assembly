@@ -244,6 +244,17 @@
           {opcode: 'divide', blockType: Scratch.BlockType.REPORTER, text: '[NUM1d] / [NUM2d]', arguments: {NUM1d: {type: Scratch.ArgumentType.NUMBER, defaultValue: 0}, NUM2d: {type: Scratch.ArgumentType.NUMBER, defaultValue: 0} }, color1f: '#4CBF5F'},
         
           {opcode: 'module', blockType: Scratch.BlockType.REPORTER, text: '[NUM1mo] % [NUM2mo]', arguments: {NUM1mo: {type: Scratch.ArgumentType.NUMBER, defaultValue: 0}, NUM2mo: {type: Scratch.ArgumentType.NUMBER, defaultValue: 0}}, color1f: '#4CBF5F'},
+
+          {
+            opcode: 'randomop',
+            blockType: Scratch.BlockType.REPORTER,
+            text: 'randomize [A] with [B]',
+            arguments: {
+              A: {type: Scratch.ArgumentType.NUMBER, defaultValue: 0},
+              B: {type: Scratch.ArgumentType.NUMBER, defaultValue: 0},
+            }
+          },
+
           {
             opcode: 'sinh',
             blockType: Scratch.BlockType.REPORTER,
@@ -2922,6 +2933,10 @@ myReporterFunc(args, util) {
 
   callinst(args) {
     return this.STORAGE.OOP[this.currentclass].properties[args.NAME];
+  }
+
+  randomop(args) {
+    return Math.random(args.A, args.B);
   }
   } // end class
   Scratch.extensions.register(new TA());
