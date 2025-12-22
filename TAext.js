@@ -2936,7 +2936,7 @@ myReporterFunc(args, util) {
   }
 
   randomop(args) {
-    return Math.random(args.A, args.B);
+    return Math.floor(Math.random() * (Math.max(args.A, args.B) - Math.min(args.A, args.B) + 1)) + Math.min(args.A, args.B);
   }
   } // end class
   Scratch.extensions.register(new TA());
