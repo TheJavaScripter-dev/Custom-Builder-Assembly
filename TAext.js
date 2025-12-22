@@ -2707,17 +2707,18 @@ myReporterFunc(args, util) {
    }
 
    json_keys(args) {
-    const arrays = Array(args.Inputkeys);
+    const arrays = this._tryParseValue(args.Inputkeys);
     const iterator = arrays.keys()
 
-    return iterator;
+    return this._tryParseValue(iterator);
    }
 
    json_values(args) {
-    const arrays = Array(args.Inputvalues);
+    const arrays = this._tryParseValue(args.Inputvalues)
+   
     const iterator = arrays.values()
 
-    return iterator;
+    return this._tryParseValue(iterator);
    }
 
    arequire(args) {
