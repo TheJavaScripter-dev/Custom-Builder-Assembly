@@ -44,13 +44,6 @@
       this._Stackbreak = false;
     }
 
-    TAManager() {
-      const TAApi = "output:/ \n";
-      const TAinterpreterversion = "5441204d696e6920494445";
-
-      alert(TAApi + TAinterpreterversion)
-    }
-
     getInfo() {
       return {
         id: 'turboassembly',
@@ -61,7 +54,7 @@
 
           {
             opcode: 'TAManager',
-            blockType: Scratch.BlockType.BUTTON,
+            blockType: Scratch.BlockType.COMMAND,
             text: 'TA version'
           },
 
@@ -2951,6 +2944,13 @@ myReporterFunc(args, util) {
   randomop(args) {
     return Math.floor(Math.random() * (Math.max(args.A, args.B) - Math.min(args.A, args.B) + 1)) + Math.min(args.A, args.B);
   }
+
+   TAManager() {
+      const TAApi = "output:/ \n";
+      const TAinterpreterversion = "5441204d696e6920494445";
+
+      alert(TAApi + TAinterpreterversion)
+    }
 
   } // end class
   Scratch.extensions.register(new TA());
