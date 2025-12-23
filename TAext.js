@@ -2949,10 +2949,9 @@ myReporterFunc(args, util) {
       const TAApi = "output:/ \n";
       const TAinterpreterversion = "5441204d696e6920494445";
 
-      if (TAinterpreterversion !== String(fetch("https://github.com/TheJavaScripter-dev/Custom-Builder-Assembly/blob/main/hashtoupdate"))) {
-        const confirm = confirm("update to the newest TA")
+      if (TAinterpreterversion !== fetch("https://raw.githubusercontent.com/TheJavaScripter-dev/Custom-Builder-Assembly/main/hashtoupdate")) {
 
-        if (confirm) {
+        if (confirm("update to the newest TA")) {
           window.open("https://github.com/TheJavaScripter-dev/Custom-Builder-Assembly/blob/main/TAext.js", "_blank")
         }
       } else {
