@@ -48,14 +48,7 @@
       const TAApi = "output:/ \n";
       const TAinterpreterversion = "5441204d696e6920494445";
 
-      if (TAinterpreterversion !== fetch("https://github.com/TheJavaScripter-dev/Custom-Builder-Assembly/blob/main/hashtoupdate")) {
-        const gotoupdate = confirm(TAApi + "TA Manager says: you want to download the newest TA?")
-        if (gotoupdate) {
-          window.open("https://github.com/TheJavaScripter-dev/Custom-Builder-Assembly/blob/main/TAext.js", "_blank")
-        }
-      } else {
-        alert("You already have the new version of TA!")
-      }
+      alert(TAApi + TAinterpreterversion)
     }
 
     getInfo() {
@@ -69,7 +62,7 @@
           {
             opcode: 'TAManager',
             blockType: Scratch.BlockType.BUTTON,
-            text: 'update TA'
+            text: 'TA version'
           },
 
           {
