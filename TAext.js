@@ -14,6 +14,10 @@
    * - Bloques de guardado/carga/get saved/clear
    * - Implementaciones seguras / stubs donde corresponde
    */
+  const archives = {
+    TAV: "00000101 00010000 00000110",
+    EXE: "00000101 00011000 00000101"
+  }
 
   class TA {
     constructor(runtime) {
@@ -35,6 +39,7 @@
         listmaps: {},  // lists can created
         appEnum: {},
         OOP: {},
+        appreq: "",
       };
 
       this._returnValue = '';
@@ -67,7 +72,7 @@
             opcode: 'ifiniciated',
             blockType: Scratch.BlockType.HAT,
             text: `
-            #𝚜𝚌𝚛𝚒𝚙𝚝 [IMAGE]
+            archive 📁 [typeto] [IMAGE]
             source:
             `,
             arguments: {
@@ -75,8 +80,12 @@
                 type: Scratch.ArgumentType.IMAGE,
                 dataURI: iconblockscriptmajor,
               },
+              typeto: {
+               type: Scratch.ArgumentType.STRING,
+               defaultValue: 'TAV'
+              }
             },
-            color1: "#1060F0"
+            color1: "#FFE001"
           },
 
           {
@@ -2881,7 +2890,18 @@ myReporterFunc(args, util) {
     return C;
   }
 
-  ifiniciated() {
+  ifiniciated(args) {
+    if (args.typeto = "TAV") {
+       this._appreq("TAV", "00000101 00010000 00000110");
+    }
+
+    if (args.typeto = "EXE") {
+      this._appreq("EXE", "")
+    }
+   
+    if (this.appreq = "") {
+      console.log("archive executed with not format")
+    }
     return true;
   }
 
@@ -2959,6 +2979,18 @@ myReporterFunc(args, util) {
       }
     }
 
+    _appreq(data, functionreq) {
+      if (data === "00000101 00010000 00000110" || data === "TAV") {
+        this.cache = archives.TAV
+        if (functionreq === this.cache) {
+          this.appreq = "TAV"
+        }
+      }
+      if (data === "00000101 00011000 00000101" || data === "EXE") {
+        this.cache = archives.EXE
+        this.appreq = "EXE"
+      }
+    }
   } // end class
   Scratch.extensions.register(new TA());
 })(Scratch);
