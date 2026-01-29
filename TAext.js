@@ -8,6 +8,7 @@
    * Old Name: Serialization System+ v15 (Ultimate)
    * Name: Custom Builders Assembly
    * Author: TheJavaScripter
+   * Actual Name: Turbo Assembly
    *
    * - Contiene TODOS los bloques para mejorar tu proyecto
    * - Retrocompatibilidad (aliases)
@@ -47,6 +48,20 @@
       this._STACKvalue = '';
       this._STACKOUT = '';
       this._Stackbreak = false;
+      this.CACHE = {
+        tempmemory: {},
+        A: {},
+        B: {},
+        C: {},
+        D: {},
+        E: {},
+        F: {},
+        G: {},
+        H: {},
+        STACK: {},
+        REG: {},
+        REC: {},
+      }
     }
 
     getInfo() {
