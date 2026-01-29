@@ -2907,11 +2907,11 @@ myReporterFunc(args, util) {
   }
 
   ifiniciated(args) {
-    if (args.typeto = "TAV") {
+    if (args.typeto === "TAV") {
        this._appreq("TAV", "00000101 00010000 00000110");
     }
 
-    if (args.typeto = "EXE") {
+    if (args.typeto === "EXE") {
       this._appreq("EXE", "")
     }
    
