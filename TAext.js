@@ -58,6 +58,12 @@
          blocks: [
 
           {
+            blockType: Scratch.BlockType.BUTTON,
+            text: 'view monitor',
+            func: "viewmonitor"
+          },
+
+          {
             opcode: 'TAManager',
             blockType: Scratch.BlockType.COMMAND,
             text: 'TA version'
@@ -352,6 +358,16 @@
             arguments: {NUM1fd: {type: Scratch.ArgumentType.NUMBER, defaultValue: 10}, NUM2fd: {type: Scratch.ArgumentType.NUMBER, defaultValue: 1.5}},
             color1f: '#4CBF5F'
           },
+
+          {
+            opcode: "relu",
+            blockType: Scratch.BlockType.REPORTER,
+            text: "relu [NUM]",
+            arguments: {
+             NUM: {type: Scratch.ArgumentType.NUMBER, defaultValue: "0.5"}
+            }
+          },
+
           {
             blockType: Scratch.BlockType.LABEL,
             text: 'Matrix Utils'
@@ -2983,13 +2999,66 @@ myReporterFunc(args, util) {
       if (data === "00000101 00010000 00000110" || data === "TAV") {
         this.cache = archives.TAV
         if (functionreq === this.cache) {
-          this.appreq = "TAV"
+          this.STORAGE.appreq = "TAV"
         }
       }
       if (data === "00000101 00011000 00000101" || data === "EXE") {
         this.cache = archives.EXE
-        this.appreq = "EXE"
+        this.STORAGE.appreq = "EXE"
       }
+    }
+
+    viewmonitor() {
+      const ID = "debugger-Turbo-Assembly";
+
+      let display = document.getElementById(ID);
+
+      if (display) {
+        display.remove();
+        return;
+      }
+
+      display = document.createElement("pre");
+
+      display.id = ID;
+
+      Object.assign(display.style, {
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        width: "350px",
+        height: "250px",
+        background: "#000",
+        color: "#fff",
+        padding: "10px",
+        border: "2px solid #555",
+        fontSize: "11px",
+        zIndex: "9999",
+        overflow: "auto",
+        fontFamily: "monospace",
+        opacity: "1"
+      });
+
+      document.body.appendChild(display);
+
+      const interval = setInterval(() => {
+        if (!document.getElementById(ID)) {
+          clearInterval(interval);
+          return;
+        }
+
+        const debugdata = {
+          filereq: this.STORAGE.appreq,
+          console: this.STORAGE.logs,
+          dir: this.STORAGE.buffers
+        }; display.textContent = JSON.stringify(debugdata, null, 2);
+      }, 100);
+    }
+
+    relu(args) {
+     const input = parseFloat(args.NUM);
+
+     return Math.max(0, input);
     }
   } // end class
   Scratch.extensions.register(new TA());
