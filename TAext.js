@@ -61,6 +61,9 @@
         STACK: {},
         REG: {},
         REC: {},
+        IR: {},
+        PC: 0,
+        CODES: {TAV: "0x05 0x0F 0x06", CBI: "0x03 0x02 0x08", TXT: "0x04 0x04 0xAC"}
       }
     }
 
@@ -71,6 +74,12 @@
         color1: '#ff3433',
         blockIconURI: 'data:image/png;base64,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',
          blocks: [
+
+          {
+            func: "openTAExplorer",
+            blockType: "button", // También funciona con Scratch.BlockType.BUTTON
+            text: "open files"
+        },
 
           {
             blockType: Scratch.BlockType.BUTTON,
@@ -3075,6 +3084,64 @@ myReporterFunc(args, util) {
 
      return Math.max(0, input);
     }
+
+    openTAExplorer() {
+    var id = "ta-window";
+    var existing = document.getElementById(id);
+    if (existing) existing.remove();
+
+    var win = document.createElement("div");
+    win.id = id;
+    win.style = "position:fixed; top:100px; left:100px; width:220px; background:#c0c0c0; border:2px solid #fff; border-right-color:#444; border-bottom-color:#444; z-index:12000; font-family:monospace; padding:2px; user-select:none;";
+
+    // BARRA DE TÍTULO
+    var titleBar = document.createElement("div");
+    titleBar.style = "background:#000080; color:white; padding:3px; font-size:12px; font-weight:bold; cursor:grab; display:flex; justify-content:space-between;";
+    titleBar.innerHTML = "<span>TA TEMP CACHE</span> <span onclick=\"document.getElementById('" + id + "').remove()\" style=\"cursor:pointer; background:#c0c0c0; color:black; padding:0 3px; border:1px solid #fff;\">X</span>";
+    win.appendChild(titleBar);
+
+    // CONTENIDO
+    var list = document.createElement("div");
+    list.style = "background:white; border:2px inset #fff; margin:4px; height:120px; overflow-y:auto; font-size:11px;";
+    
+    var files = [].concat(Object.keys(this.CACHE.tempmemory), Object.keys(this.CACHE.REG));
+    var html = "";
+    
+    if (files.length === 0) {
+        html = "<div style=\"color:#888;padding:4px;\">(nothing)</div>";
+    } else {
+        for (var i = 0; i < files.length; i++) {
+            html += "<div style=\"padding:2px; border-bottom:1px solid #eee;\">> " + files[i] + "</div>";
+        }
+    }
+    
+    list.innerHTML = html;
+    win.appendChild(list);
+
+    // LÓGICA DE ARRASTRE
+    var isDragging = false;
+    var offset = {x: 0, y: 0};
+
+    titleBar.onmousedown = function(e) {
+        isDragging = true;
+        offset.x = e.clientX - win.offsetLeft;
+        offset.y = e.clientY - win.offsetTop;
+        titleBar.style.cursor = "grabbing";
+    };
+
+    window.onmousemove = function(e) {
+        if (!isDragging) return;
+        win.style.left = (e.clientX - offset.x) + "px";
+        win.style.top = (e.clientY - offset.y) + "px";
+    };
+
+    window.onmouseup = function() {
+        isDragging = false;
+        titleBar.style.cursor = "grab";
+    };
+
+    document.body.appendChild(win);
+}
   } // end class
   Scratch.extensions.register(new TA());
 })(Scratch);
