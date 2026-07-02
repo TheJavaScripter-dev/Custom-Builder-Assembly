@@ -3336,28 +3336,28 @@ imaginary(args) {
 }
 
 createarray(args) {
-     if (args.typearr = "Float64Array") {
+     if (args.typearr == "Float64Array") {
        this.Views[args.name] = new Float64Array(args.lengtha)
       }
-      if (args.typearr = "Float32Array") {
+      if (args.typearr == "Float32Array") {
  this.Views[args.name] = new Float32Array(args.lengtha)
       }
-      if (args.typearr = "Uint32Array") {
+      if (args.typearr == "Uint32Array") {
  this.Views[args.name] = new Uint32Array(args.lengtha)
       }
-      if (args.typearr = "Uint16Array") {
+      if (args.typearr == "Uint16Array") {
 this.Views[args.name] = new Uint16Array(args.lengtha)
       }
-      if (args.typearr = "Uint8Array") {
+      if (args.typearr == "Uint8Array") {
 this.Views[args.name] = new Uint8Array(args.lengtha)
       }
-      if (args.typearr = "Int32Array") {
+      if (args.typearr == "Int32Array") {
 this.Views[args.name] = new Int32Array(args.lengtha)
       }
-      if (args.typearr = "Int16Array") {
+      if (args.typearr == "Int16Array") {
 this.Views[args.name] = new Int16Array(args.lengtha)
       }
-      if (args.typearr = "Int8Array") {
+      if (args.typearr == "Int8Array") {
 this.Views[args.name] = new Int8Array(args.lengtha)
       }
     }
@@ -3448,10 +3448,10 @@ this.Views[args.name] = new Int8Array(args.lengtha)
     
   }
   createarray(args) {
-     if (args.typearr = "Float64Array") {
+     if (args.typearr == "Float64Array") {
        this.Views[args.name] = new Float64Array(args.lengtha)
       }
-      if (args.typearr = "Float32Array") {
+      if (args.typearr == "Float32Array") {
  this.Views[args.name] = new Float32Array(args.lengtha)
       }
       if (args.typearr = "Uint32Array") {
