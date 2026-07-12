@@ -19,8 +19,31 @@
     TAV: "00000101 00010000 00000110",
     EXE: "00000101 00011000 00000101"
   }
+  class FunctionRymthes {
+    constructor(rymthes) {
+      this.rymthes = rymthes;
+      this.RymthesStorage = {
+        vars: {},
+        consts: {},
+        statics: {},
+        integrers: {},
+        threads: {}
+      };
+      this.temp = ""
+      this.threadscounter = 0
+    }
+    FRFI(rt,cs,oj,sw) {
+      this.threadscounter++
+     if (cs = "temp") {
+      this.temp = rt
+     }
+     if (cs = "new") {
+      this.FunctionRymthes[sw][oj] = rt
+     }
+    }
+  }
 
-  class TA {
+  class TTAS {
     constructor(runtime) {
       this.runtime = runtime;
 
@@ -65,6 +88,20 @@
         PC: 0,
         CODES: {TAV: "0x05 0x0F 0x06", CBI: "0x03 0x02 0x08", TXT: "0x04 0x04 0xAC"}
       }
+       this.Views = {}
+        this.data = null;
+        this.mimetype = "application/json";
+        this.method = "GET";
+        this.url = "";
+        this.targetType = "texto";
+
+        this.TTML = {
+          dynamics: {},
+          objectTTML: {},
+          TTMLclass: {
+            interfaces: {}
+          }
+        }
     }
 
     getCompiler(bit, HEX) {
@@ -715,6 +752,42 @@
               VALUE: {type: Scratch.ArgumentType.BOOLEAN, defaultValue: true}
             }
           },
+          {
+           opcode: "stringTA",
+            blockType: Scratch.BlockType.COMMAND,
+            text: "string [VAR] = [VALUE]",
+            arguments: {
+              VAR: {type: Scratch.ArgumentType.STRING, defaultValue: "var"},
+              VALUE: {type: Scratch.ArgumentType.STRING, defaultValue: "foo"}
+            }
+          },
+          {
+            opcode: "charTA",
+            blockType: Scratch.BlockType.COMMAND,
+            text: "char [VAR] = [VALUE]",
+            arguments: {
+              VAR: {type: Scratch.ArgumentType.STRING, defaultValue: "var"},
+              VALUE: {type: Scratch.ArgumentType.STRING, defaultValue: "A"}
+            }
+          },
+          {
+            opcode: "bytesTA",
+            blockType: Scratch.BlockType.COMMAND,
+            text: "byte [VAR] = [VALUE]",
+            arguments: {
+              VAR: {type: Scratch.ArgumentType.STRING, defaultValue: "var"},
+              VALUE: {type: Scratch.ArgumentType.STRING, defaultValue: "00000010"}
+            }
+          },
+          {
+            opcode: "uintTA",
+            blockType: Scratch.BlockType.COMMAND,
+            text: "uint [VAR] = [VALUE]",
+            arguments: {
+              VAR: {type: Scratch.ArgumentType.STRING, defaultValue: "var"},
+              VALUE: {type: Scratch.ArgumentType.STRING, defaultValue: "1"}
+            }
+          },
            {
             blockType: Scratch.BlockType.LABEL,
             text: 'computer logic'
@@ -1363,6 +1436,57 @@
           },
           {
             blockType: Scratch.BlockType.LABEL,
+            text: "HTTP"
+          },
+           {
+                    opcode: 'clearData',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'clear data'
+                },
+                {
+                    opcode: 'setMimeType',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'set mimetype [TYPE]',
+                    arguments: {
+                        TYPE: { type: Scratch.ArgumentType.STRING, defaultValue: 'application/json' }
+                    }
+                },
+                {
+                    opcode: 'setRequestMethod',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'set request method [METHOD]',
+                    arguments: {
+                        METHOD: { type: Scratch.ArgumentType.STRING, defaultValue: 'GET' }
+                    }
+                },
+                {
+                    opcode: 'dataSend',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'datasend [DATA] to [TARGET]',
+                    arguments: {
+                        DATA: { type: Scratch.ArgumentType.STRING, defaultValue: 'hello world' },
+                        TARGET: { 
+                            type: Scratch.ArgumentType.STRING, 
+                            menu: 'targetMenu', 
+                            defaultValue: 'texto' 
+                        }
+                    }
+                },
+                {
+                    opcode: 'setDataURL',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'data URL [URL]',
+                    arguments: {
+                        URL: { type: Scratch.ArgumentType.STRING, defaultValue: 'https://example.com' }
+                    }
+                },
+                {
+                    opcode: 'getDataURLWEB',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'dataURLWEB'
+                },
+          {
+            blockType: Scratch.BlockType.LABEL,
             text: 'control debug'
           },
           { opcode: 'break_block', blockType: Scratch.BlockType.COMMAND, text: 'break', isTerminal: true },
@@ -1566,7 +1690,11 @@
           editModes: { acceptReporters: true, items: ['add', 'delete', 'item', 'map', 'json edit', 'txt', 'modelcreator'] },
           trigmenu: { acceptReporters: true, items: ['sin', 'cos','tan','sinh','cosh']},
           branchmenu: {acceptReporters: true, items: ['true', 'false']},
-          menuarray: {acceptReporters: true, items: ["STO_ARRAY", "LENGTH_ARRAY"]}
+          menuarray: {acceptReporters: true, items: ["STO_ARRAY", "LENGTH_ARRAY"]},
+          targetMenu: {
+                    acceptReporters: true,
+                    items: ['texto', 'imagenes', 'videos', 'documentos']
+                }
         }
       };
     } // end getInfo
@@ -2958,11 +3086,29 @@ myReporterFunc(args, util) {
    }
    
    scostume(args, util) {
-    const target = util.target;
+   // util.target representa el objeto (sprite) actual que ejecuta el bloque
+      const target = util.target;
+      
+      if (!target) return;
 
-    let costume = args.COSTUMEr;
+      const costumeNameOrIndex = args.COSTUMEr;
 
-    target.setCostume(costume);
+      // Intentar buscar el disfraz por nombre en el objeto actual
+      let costumeIndex = target.getCostumeIndexByName(costumeNameOrIndex);
+
+      // Si no lo encuentra por nombre, verificar si el usuario ingresó un número entero (índice)
+      if (costumeIndex === -1 && !isNaN(costumeNameOrIndex) && costumeNameOrIndex !== '') {
+        // Scratch maneja los índices basados en 1 en la interfaz, pero internamente son basados en 0
+        const parsedIndex = Math.floor(Number(costumeNameOrIndex)) - 1;
+        if (parsedIndex >= 0 && parsedIndex < target.getCostumes().length) {
+          costumeIndex = parsedIndex;
+        }
+      }
+
+      // Si se encontró un disfraz válido, se realiza el cambio
+      if (costumeIndex !== -1) {
+        target.setCostume(costumeIndex);
+      }
    }
 
    adefault() {
@@ -3336,29 +3482,32 @@ imaginary(args) {
 }
 
 createarray(args) {
+  let typearray = args.typearr;
+  let sizearray = args.lengtha * typearray.BYTES_PER_ELEMENT;
+  let Array = new ArrayBuffer(sizearray);
      if (args.typearr == "Float64Array") {
-       this.Views[args.name] = new Float64Array(args.lengtha)
+       this.Views[args.name] = new Float64Array(Array)
       }
       if (args.typearr == "Float32Array") {
- this.Views[args.name] = new Float32Array(args.lengtha)
+ this.Views[args.name] = new Float32Array(Array)
       }
       if (args.typearr == "Uint32Array") {
- this.Views[args.name] = new Uint32Array(args.lengtha)
+ this.Views[args.name] = new Uint32Array(Array)
       }
       if (args.typearr == "Uint16Array") {
-this.Views[args.name] = new Uint16Array(args.lengtha)
+this.Views[args.name] = new Uint16Array(Array)
       }
       if (args.typearr == "Uint8Array") {
-this.Views[args.name] = new Uint8Array(args.lengtha)
+this.Views[args.name] = new Uint8Array(Array)
       }
       if (args.typearr == "Int32Array") {
-this.Views[args.name] = new Int32Array(args.lengtha)
+this.Views[args.name] = new Int32Array(Array)
       }
       if (args.typearr == "Int16Array") {
-this.Views[args.name] = new Int16Array(args.lengtha)
+this.Views[args.name] = new Int16Array(Array)
       }
       if (args.typearr == "Int8Array") {
-this.Views[args.name] = new Int8Array(args.lengtha)
+this.Views[args.name] = new Int8Array(Array)
       }
     }
     setitem(args) {
@@ -3377,6 +3526,72 @@ this.Views[args.name] = new Int8Array(args.lengtha)
     }
     deletearray(args) {
       delete this.Views[args.name]
+    }
+
+     clearData() {
+        this.data = null;
+        this.url = "";
+        this.mimetype = "application/json";
+        this.method = "GET";
+    }
+
+    setMimeType(args) {
+        this.mimetype = args.TYPE;
+    }
+
+    setRequestMethod(args) {
+        this.method = args.METHOD.toUpperCase();
+    }
+
+    dataSend(args) {
+        this.data = args.DATA;
+        this.targetType = args.TARGET;
+    }
+
+    setDataURL(args) {
+        this.url = args.URL;
+    }
+
+    async getDataURLWEB() {
+        if (!this.url) return "No URL set";
+
+        try {
+            const response = await fetch(this.url, {
+                method: this.method,
+                headers: { "Content-Type": this.mimetype },
+                body: this.method !== "GET" ? this.data : undefined
+            });
+
+            if (this.targetType === "imagenes") {
+                const blob = await response.blob();
+                return URL.createObjectURL(blob);
+            } else if (this.targetType === "videos" || this.targetType === "documentos") {
+                const blob = await response.blob();
+                return URL.createObjectURL(blob);
+            } else {
+                return await response.text();
+            }
+        } catch (e) {
+            return "Error: " + e.message;
+        }
+    }
+
+    stringTA(args) {
+      this.STORAGE.vars[args.VAR] = String(args.VALUE)
+    }
+
+    charTA(args) {
+      if (args.VALUE.length == 1) {
+      this.STORAGE.vars[args.VAR] = String(args.VALUE)
+      }
+    }
+
+    bytesTA(args) {
+      this.STORAGE.vars[args.VAR] = Number("0b" + args.VALUE)
+    }
+
+    uintTA(args) {
+      this.STORAGE.vars[args.VAR] = Number(Math.max(0, args.VALUE))
     }
 
   } // end class
@@ -3490,6 +3705,53 @@ this.Views[args.name] = new Int8Array(args.lengtha)
     deletearray(args) {
       delete this.Views[args.name]
     }
+    clearData() {
+        this.data = null;
+        this.url = "";
+        this.mimetype = "application/json";
+        this.method = "GET";
+    }
+
+    setMimeType(args) {
+        this.mimetype = args.TYPE;
+    }
+
+    setRequestMethod(args) {
+        this.method = args.METHOD.toUpperCase();
+    }
+
+    dataSend(args) {
+        this.data = args.DATA;
+        this.targetType = args.TARGET;
+    }
+
+    setDataURL(args) {
+        this.url = args.URL;
+    }
+
+    async getDataURLWEB() {
+        if (!this.url) return "No URL set";
+
+        try {
+            const response = await fetch(this.url, {
+                method: this.method,
+                headers: { "Content-Type": this.mimetype },
+                body: this.method !== "GET" ? this.data : undefined
+            });
+
+            if (this.targetType === "imagenes") {
+                const blob = await response.blob();
+                return URL.createObjectURL(blob);
+            } else if (this.targetType === "videos" || this.targetType === "documentos") {
+                const blob = await response.blob();
+                return URL.createObjectURL(blob);
+            } else {
+                return await response.text();
+            }
+        } catch (e) {
+            return "Error: " + e.message;
+        }
+    }
 }
-  Scratch.extensions.register(new TA());
+  Scratch.extensions.register(new TTAS());
 })(Scratch);
