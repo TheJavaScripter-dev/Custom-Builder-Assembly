@@ -102,7 +102,52 @@
             interfaces: {}
           }
         }
+
+        this.miniSTACK = {}
+        this.threadscounter = 0
+        this.constr = {}
+        this.Classes = {}
+        this.MEM = {}
+        this.actuallycurrentClass = ""
+        this.toMEMSTACK = {}
+        this.threads_executed = 0
+        this.Currentobject = ""
+        this.constructors = {}
+        this.pointers = {}
+        this.DEFINITIONS = {}
+        this.nodes = 0
+
+        this.functioncode = ""
     }
+
+      TTVM(Act,To,Name,Value) {
+        this.threadscounter++
+        if (Act === "newclass") {
+          this.Classes[Name] = {}
+          this.actuallycurrentClass = Name
+          this.miniSTACK[Name] = To
+          this.threads_executed++
+          this.threadscounter--
+          return;
+        }
+        if (Act === "newobject") {
+          if (!this.Classes[Name]) {
+            this.Classes[Name] = {}
+          }
+          if (!this.miniSTACK[Name]) {
+            this.miniSTACK[Name] = To
+          }
+          if (this.Classes[Name]) {
+          this.Classes[Name][To] = Value
+          this.Currentobject = To
+          this.nodes++
+          }
+          return Value;
+        }
+        if (Act === "viewobject") {
+          return this.Classes[Name][To];
+        }
+      }
 
     getCompiler(bit, HEX) {
      this.COMPLIER = {ars: [], arg: [], mov: {}, eax: {}, esp: []}
@@ -191,7 +236,78 @@
             text: 'me',
             arguments: {},
           },
-          
+          {
+            blockType: Scratch.BlockType.LABEL,
+            text: "Threads"
+          },
+          {
+            opcode: "newthread",
+            blockType: Scratch.BlockType.CONDITIONAL,
+            color1: "#333333",
+            text: "/thr [name] [To]:",
+            arguments: {
+              name: {type: Scratch.ArgumentType.STRING, defaultValue: "myThread"},
+              To: {type: Scratch.ArgumentType.STRING, defaultValue: "1"},
+            }
+          },
+          {
+            opcode: "fornewobject",
+            blockType: Scratch.BlockType.COMMAND,
+            color1: "#333333",
+            text: "obj [name] = [value]",
+            arguments: {
+              name: {type: Scratch.ArgumentType.STRING, defaultValue: "foo"},
+              value: {type: Scratch.ArgumentType.STRING, defaultValue: "bar"},
+            }
+          },
+          {
+            opcode: "viewobject",
+            blockType: Scratch.BlockType.REPORTER,
+            color1: "#333333",
+            text: "obj [name]",
+            arguments: {
+              name: {type: Scratch.ArgumentType.STRING, defaultValue: "foo"},
+            }
+          },
+          {
+            opcode: "newfunction",
+            blockType: Scratch.BlockType.CONDITIONAL,
+            color1: "#333333",
+            text: "function [args]:",
+            arguments: {
+              name: {type: Scratch.ArgumentType.STRING, defaultValue: "myFunc"},
+              args: {type: Scratch.ArgumentType.STRING, defaultValue: "(a, b)"},
+            }
+          },
+          {
+            opcode: "runfunction",
+            blockType: Scratch.BlockType.REPORTER,
+            color1: "#333333",
+            text: "run [args]",
+            arguments: {
+                args: {type: Scratch.ArgumentType.STRING, defaultValue: "(1, 2)"},
+            },
+            isTerminal: true
+          },
+           {
+            opcode: "returnfor",
+            blockType: Scratch.BlockType.COMMAND,
+            color1: "#333333",
+            text: "return [text]",
+            arguments: {
+              text: {type: Scratch.ArgumentType.STRING, defaultValue: ""}
+            },
+            isTerminal: true
+          },
+          {
+            opcode: "linefor",
+            blockType: Scratch.BlockType.COMMAND,
+            color1: "#333333",
+            text: "nwl [text]",
+            arguments: {
+              text: {type: Scratch.ArgumentType.STRING, defaultValue: ""}
+            }
+          },
           {
             blockType: Scratch.BlockType.LABEL,
             text: 'functions and OOP'
@@ -3592,6 +3708,38 @@ this.Views[args.name] = new Int8Array(Array)
 
     uintTA(args) {
       this.STORAGE.vars[args.VAR] = Number(Math.max(0, args.VALUE))
+    }
+
+    newthread(args) {
+      this.TTVM("newclass",args.To,args.name, "");
+      return true;
+    }
+
+    fornewobject(args) {
+      this.TTVM("newobject", args.name, this.actuallycurrentClass, args.value);
+      return 0;
+    }
+
+    viewobject(args) {
+     return this.TTVM("viewobject",args.name, this.actuallycurrentClass, "");
+    }
+
+    newfunction(args) {
+      this.functioncode = args.args + "=>" + "{"
+      return true;
+    }
+
+    returnfor(args) {
+     this.functionterminate = this.functioncode + "return" + " " + String(args.text) + " " + ";" + "}"
+    }
+
+    runfunction(args) {
+      const fn = eval(`(${this.functionterminate})(${args.args})`)
+      return fn
+    }
+
+    linefor(args) {
+      this.functioncode = this.functioncode + " " + String(args.text)
     }
 
   } // end class
