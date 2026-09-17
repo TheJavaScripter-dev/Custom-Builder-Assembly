@@ -118,6 +118,9 @@
         this.nodes = 0
 
         this.functioncode = ""
+        this.functions = {}
+
+        this.currentmsg = ""
     }
 
       TTVM(Act,To,Name,Value) {
@@ -283,9 +286,10 @@
             opcode: "runfunction",
             blockType: Scratch.BlockType.REPORTER,
             color1: "#333333",
-            text: "run [args]",
+            text: "run ([name])=([args])",
             arguments: {
                 args: {type: Scratch.ArgumentType.STRING, defaultValue: "(1, 2)"},
+                name: {type: Scratch.ArgumentType.STRING, defaultValue: "fx"},
             },
             isTerminal: true
           },
@@ -308,6 +312,89 @@
               text: {type: Scratch.ArgumentType.STRING, defaultValue: ""}
             }
           },
+          {
+            opcode: "createnode",
+            blockType: Scratch.BlockType.COMMAND,
+            color1: "#333333",
+            text: "new node",
+            isTerminal: true
+          },
+          {
+            opcode: "deletenode",
+            blockType: Scratch.BlockType.COMMAND,
+            color1: "#333333",
+            text: "delete node",
+            isTerminal: true
+          },
+
+          {
+            opcode: "createheap",
+            blockType: Scratch.BlockType.CONDITIONAL,
+            text: "heap = ([fx])",
+            color1: "#333333",
+            arguments: {
+              fx: {type: Scratch.ArgumentType.STRING, defaultValue: "fx"}
+            },
+            isTerminal: true
+          },
+
+          {
+            opcode: "createdefine",
+            blockType: Scratch.BlockType.CONDITIONAL,
+            text: "/def = $([fx])",
+            color1: "#333333",
+            arguments: {
+              fx: {type: Scratch.ArgumentType.STRING, defaultValue: "fx"}
+            },
+            isTerminal: true
+          },
+
+          {
+            opcode: "enddefine",
+            blockType: Scratch.BlockType.COMMAND,
+            color1: "#333333",
+            text: "/end_definition",
+            isTerminal: true
+          },
+
+          {
+            opcode: "returncountnodes",
+            blockType: Scratch.BlockType.REPORTER,
+            blockShape: Scratch.BlockShape.SQUARE,
+            color1: "#333333",
+            text: "nodes"
+          },
+
+          {
+            opcode: "ifnodes",
+            blockType: Scratch.BlockType.CONDITIONAL,
+            color1: "#333333",
+            text: "if of number of nodes gets to [NUM]",
+            arguments: {
+              NUM: {type: Scratch.ArgumentType.NUMBER, defaultValue: 1}
+            }
+          },
+
+          {
+            opcode: "rcbmsg",
+            blockType: Scratch.BlockType.HAT,
+            color1: "#333333",
+            text: "rcb msg [NAME]",
+            arguments: {
+              NAME: {type: Scratch.ArgumentType.STRING, defaultValue: "msg1"}
+            }
+          },
+
+           {
+            opcode: "envmsg",
+            blockType: Scratch.BlockType.COMMAND,
+            color1: "#333333",
+            text: "env msg [NAME]",
+            arguments: {
+              NAME: {type: Scratch.ArgumentType.STRING, defaultValue: "msg1"}
+            }
+          },
+
           {
             blockType: Scratch.BlockType.LABEL,
             text: 'functions and OOP'
@@ -3734,7 +3821,7 @@ this.Views[args.name] = new Int8Array(Array)
     }
 
     runfunction(args) {
-      const fn = eval(`(${this.functionterminate})(${args.args})`)
+      const fn = eval(`(${this.functions[args.name]})(${args.args})`)
       return fn
     }
 
@@ -3742,6 +3829,46 @@ this.Views[args.name] = new Int8Array(Array)
       this.functioncode = this.functioncode + " " + String(args.text)
     }
 
+    createnode(args) {
+      this.nodes++
+    }
+    deletenode(args) {
+      this.nodes--
+    }
+    createheap(args) {
+      this.actuallycurrentClass = args.fx;
+      return true;
+    }
+
+    createdefine(args){
+      this.functions[args.fx] = ""
+      this.currentdefinition = args.fx
+      return true;
+    }
+
+    enddefine(args){
+      this.functions[this.currentdefinition] = this.functionterminate
+    }
+
+    returncountnodes(args) {
+      return this.nodes;
+    }
+
+    ifnodes(args) {
+      if (this.nodes === Number(args.NUM)) {
+        return true;
+      }
+    }
+
+    rcbmsg(args) {
+      if (this.currentmsg == args.NAME) {
+        return true;
+      }
+    }
+
+    envmsg(args) {
+      this.currentmsg = args.NAME;
+    }
   } // end class
   class TAATGL {
     constructor(runtime) {
