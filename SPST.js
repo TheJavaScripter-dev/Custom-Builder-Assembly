@@ -1518,6 +1518,27 @@
         },
 
         {
+          opcode: "continue_prog",
+          blockType: Scratch.BlockType.CONDITIONAL,
+          text: "if, if else [y]",
+          branchCount: 2,
+          arguments: {
+            y: {type: Scratch.ArgumentType.BOOLEAN, defaultValue: false}
+          },
+          isTerminal: true,
+        },
+
+        {
+          opcode: "repeatuntilX",
+          blockType: Scratch.BlockType.LOOP,
+          text: "repeat until [y]",
+          branchCount: 1,
+          arguments: {
+            y: {type: Scratch.ArgumentType.BOOLEAN, defaultValue: false}
+          }
+        },
+
+        {
           opcode: 'trytodo',
           blockType: Scratch.BlockType.CONDITIONAL,
           branchCount: 2,
@@ -3972,6 +3993,21 @@ this.Views[args.name] = new Int8Array(Array)
 
     xyzarray(args) {
       return [this.x, this.y, this.z];
+    }
+
+    continue_prog(args, util) {
+      if (args.y === true) {
+       util.startBranch(1)
+      } else {
+        util.startBranch(2)
+      }
+    }
+
+    repeatuntilX(args,util) {
+      const T = Scratch.Cast.toBoolean(args.y);
+      if (!T) {
+        util.startBranch(1,true)
+      }
     }
   } // end class
   class TAATGL {
